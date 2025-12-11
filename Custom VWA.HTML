@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shivansh Kuntal VWA (SKVWA)</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --card: #111a2b;
+      --muted: #8aa0c4;
+      --text: #e8efff;
+      --primary: #7aa2ff;
+      --accent: #38e1b2;
+      --danger: #ff6b6b;
+      --warning: #f7b955;
+      --shadow: 0 10px 25px rgba(0,0,0,.35);
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0; background: radial-gradient(1200px 800px at 20% -10%, rgba(122,162,255,.15), transparent),
+                         radial-gradient(800px 600px at 100% 10%, rgba(56,225,178,.12), transparent),
+                         var(--bg);
+      color: var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+    }
+    a { color: inherit; text-decoration: none; }
+    .app { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+    /* Sidebar */
+    .sidebar { position: sticky; top: 0; height: 100vh; padding: 28px 20px; background: rgba(10,16,28,.7); backdrop-filter: blur(8px); border-right: 1px solid rgba(122,162,255,.15); }
+    .brand { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 12px; background: linear-gradient(135deg, rgba(122,162,255,.18), rgba(56,225,178,.12)); box-shadow: var(--shadow);
+    }
+    .brand-logo { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: linear-gradient(135deg, var(--primary), var(--accent)); }
+    .brand-logo svg { filter: drop-shadow(0 2px 6px rgba(0,0,0,.35)); }
+    .brand h1 { font-size: 18px; margin: 0; line-height: 1.2; }
+    .brand .sub { font-size: 12px; color: var(--muted); }
+
+    .nav { margin-top: 18px; display: grid; gap: 8px; }
+    .nav-section { margin: 18px 10px 6px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+    .nav a { padding: 12px 14px; border-radius: 12px; display: flex; align-items: center; gap: 10px; border: 1px solid transparent; }
+    .nav a:hover, .nav a.active { background: rgba(122,162,255,.10); border-color: rgba(122,162,255,.25); }
+
+    /* Main */
+    .main { padding: 28px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .search { flex: 1; position: relative; }
+    .search input { width: 100%; padding: 12px 14px 12px 38px; border-radius: 12px; background: rgba(255,255,255,.06); color: var(--text); border: 1px solid rgba(122,162,255,.25); }
+    .search-icon { position: absolute; top: 0; bottom: 0; left: 10px; display: grid; place-items: center; pointer-events: none; }
+    .chip { padding: 8px 12px; border: 1px solid rgba(122,162,255,.25); border-radius: 999px; font-size: 12px; color: var(--muted); }
+
+    .cards { display: grid; grid-template-columns: repeat(auto-fill,minmax(260px,1fr)); gap: 16px; margin-top: 20px; }
+    .card { background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.00)); border: 1px solid rgba(122,162,255,.18); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
+    .card h3 { margin: 0 0 8px; font-size: 16px; }
+    .card p { margin: 0 0 12px; color: var(--muted); font-size: 13px; min-height: 38px; }
+    .pill { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; padding: 8px 10px; border-radius: 999px; border: 1px dashed rgba(122,162,255,.35); color: var(--muted); }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 10px 12px; border-radius: 12px; background: linear-gradient(135deg, rgba(122,162,255,.15), rgba(56,225,178,.12)); border: 1px solid rgba(122,162,255,.35); color: var(--text); cursor: pointer; }
+    .btn:hover { filter: brightness(1.05); }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+    .panel { background: var(--card); border: 1px solid rgba(122,162,255,.18); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
+    .panel h2 { margin-top: 0; }
+
+    /* Footer */
+    footer { margin-top: 28px; padding-top: 18px; border-top: 1px dashed rgba(122,162,255,.25); color: var(--muted); font-size: 12px; }
+
+    /* Utility */
+    .hide { display: none !important; }
+    .tag { font-size: 11px; padding: 4px 8px; border-radius: 999px; border: 1px solid rgba(255,255,255,.15); color: var(--muted); }
+    .tag.danger { border-color: rgba(255,107,107,.4); color: #ffb2b2; }
+    .tag.warning { border-color: rgba(247,185,85,.4); color: #fbd8a3; }
+    .tag.success { border-color: rgba(56,225,178,.4); color: #c6ffee; }
+    .kbd { background: rgba(255,255,255,.08); padding: 2px 8px; border-radius: 6px; border: 1px solid rgba(122,162,255,.25); font-size: 12px; }
+
+    /* Forms */
+    .field { display: grid; gap: 8px; margin-bottom: 12px; }
+    label { font-size: 13px; color: var(--muted); }
+    input, select, textarea { background: rgba(255,255,255,.06); color: var(--text); border: 1px solid rgba(122,162,255,.25); border-radius: 10px; padding: 10px 12px; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-logo" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2l3.5 6.5L22 9l-5 4 1.5 7L12 16l-6.5 4L7 13 2 9l6.5-.5L12 2z" stroke="white" stroke-width="1.4"/>
+          </svg>
+        </div>
+        <div>
+          <h1>Shivansh Kuntal VWA</h1>
+          <div class="sub">Static UI clone of a training app</div>
+        </div>
+      </div>
+
+      <div class="nav-section">Navigate</div>
+      <nav class="nav" id="nav">
+        <a href="#dashboard" data-view="dashboard" class="active">🏠 Dashboard</a>
+        <a href="#labs" data-view="labs">🧪 Labs</a>
+        <a href="#playground" data-view="playground">🛠️ Playground</a>
+        <a href="#login" data-view="login">🔐 Login</a>
+        <a href="#register" data-view="register">📝 Register</a>
+        <a href="#about" data-view="about">📘 About</a>
+        <a href="#help" data-view="help">❓ Help</a>
+      </nav>
+
+      <div class="nav-section">Quick Filters</div>
+      <div class="nav" style="padding: 0 10px;">
+        <div class="pill">Press <span class="kbd">/</span> to search</div>
+        <div class="pill">This build is <span class="tag success">Static & Safe</span></div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="search">
+          <span class="search-icon">🔎</span>
+          <input id="search" placeholder="Search modules, pages, or hints…" />
+        </div>
+        <div class="chip">Brand: <strong>SKVWA</strong></div>
+        <div class="chip">Mode: <strong>Demo UI</strong></div>
+      </div>
+
+      <!-- DASHBOARD -->
+      <section id="view-dashboard">
+        <div class="grid-3" style="margin-top:20px;">
+          <div class="panel">
+            <h2>Welcome to SKVWA</h2>
+            <p>This is a <strong></strong> a vulnerable web app . It is <em>safe for demos</em> and does not include any server-side code or real vulnerabilities.</p>
+            <p class="tag warning">Tip: Use this as a shell and plug in your own backend later.</p>
+          </div>
+          <div class="panel">
+            <h2>Learning Tracks</h2>
+            <div class="cards">
+              <div class="card"><h3>Authentication</h3><p>Login, sessions, password handling (UI only).</p><button class="btn" data-goto="login">Open Login</button></div>
+              <div class="card"><h3>Input Handling</h3><p>Forms & sanitization demos (no processing).</p><button class="btn" data-goto="playground">Try Playground</button></div>
+              <div class="card"><h3>Client-Side</h3><p>DOM, storage, and routing examples.</p><button class="btn" data-goto="labs">See Labs</button></div>
+            </div>
+          </div>
+          <div class="panel">
+            <h2>Status</h2>
+            <div class="cards">
+              <div class="card"><h3>Build</h3><p>Static HTML/CSS/JS</p><span class="tag success">Safe</span></div>
+              <div class="card"><h3>Server</h3><p>None (no PHP/MySQL)</p><span class="tag">Zero backend</span></div>
+              <div class="card"><h3>Purpose</h3><p>UI training & presentation</p><span class="tag">Demo</span></div>
+            </div>
+          </div>
+        </div>
+
+        <h2 style="margin-top:24px;">Featured Modules</h2>
+        <div class="cards">
+          <div class="card">
+            <h3>SQL Injection (UI)</h3>
+            <p>Mock login/search forms with neutral handling. No DB actions.</p>
+            <button class="btn" data-goto="labs" data-filter="sqli">Open</button>
+          </div>
+          <div class="card">
+            <h3>Cross-Site Scripting (UI)</h3>
+            <p>Echo panels escape content client-side by default.</p>
+            <button class="btn" data-goto="labs" data-filter="xss">Open</button>
+          </div>
+          <div class="card">
+            <h3>CSRF (UI)</h3>
+            <p>Demonstrates token placement in forms (no server verify).</p>
+            <button class="btn" data-goto="labs" data-filter="csrf">Open</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- LABS -->
+      <section id="view-labs" class="hide">
+        <h2>Labs (UI Only)</h2>
+        <p class="tag">These are safe, client-side mockups meant for presentations and practice <em>without</em> real exploitation.</p>
+        <div class="cards" id="labs-grid">
+          <!-- Cards injected by JS -->
+        </div>
+      </section>
+
+      <!-- PLAYGROUND -->
+      <section id="view-playground" class="hide">
+        <div class="grid-2">
+          <div class="panel">
+            <h2>Echo Console (Escaped)</h2>
+            <div class="field">
+              <label for="echo">Type something</label>
+              <input id="echo" placeholder="Hello SKVWA!" />
+            </div>
+            <button class="btn" id="echoBtn">Echo Safely</button>
+            <div class="panel" style="margin-top:12px;">
+              <div id="echoOut">Output will appear here…</div>
+            </div>
+          </div>
+          <div class="panel">
+            <h2>Local Storage Demo</h2>
+            <div class="field">
+              <label for="k">Key</label>
+              <input id="k" value="skvwa-note" />
+            </div>
+            <div class="field">
+              <label for="v">Value</label>
+              <input id="v" placeholder="Save a small note" />
+            </div>
+            <div class="grid-3">
+              <button class="btn" id="saveLS">Save</button>
+              <button class="btn" id="loadLS">Load</button>
+              <button class="btn" id="clearLS">Clear</button>
+            </div>
+            <div class="panel" style="margin-top:12px;">
+              <div id="lsOut">Nothing saved yet.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- LOGIN -->
+      <section id="view-login" class="hide">
+        <div class="grid-2">
+          <div class="panel">
+            <h2>Login (Demo Only)</h2>
+            <form id="loginForm" onsubmit="event.preventDefault(); demoToast('This login is a front-end mock.');">
+              <div class="field"><label>Username</label><input required /></div>
+              <div class="field"><label>Password</label><input type="password" required /></div>
+              <div class="field"><label>CSRF Token (mock)</label><input value="skvwa-demo-token" readonly /></div>
+              <button class="btn" type="submit">Sign in</button>
+            </form>
+          </div>
+          <div class="panel">
+            <h2>Info</h2>
+            <p class="muted">This form does not submit to a server. Use it to discuss client-side best practices, placeholders, and token placement.</p>
+            <p class="tag warning">No credentials are transmitted.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- REGISTER -->
+      <section id="view-register" class="hide">
+        <div class="panel">
+          <h2>Create Account (Demo)</h2>
+          <form onsubmit="event.preventDefault(); demoToast('Registration is disabled in this static demo.');">
+            <div class="grid-3">
+              <div class="field"><label>First name</label><input required /></div>
+              <div class="field"><label>Last name</label><input required /></div>
+              <div class="field"><label>Username</label><input required /></div>
+            </div>
+            <div class="grid-2">
+              <div class="field"><label>Email</label><input type="email" required /></div>
+              <div class="field"><label>Password</label><input type="password" required minlength="8" /></div>
+            </div>
+            <div class="field"><label>Role</label>
+              <select>
+                <option>Student</option>
+                <option>Instructor</option>
+                <option>Researcher</option>
+              </select>
+            </div>
+            <button class="btn" type="submit">Create account</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- ABOUT -->
+      <section id="view-about" class="hide">
+        <div class="panel">
+          <h2>About SKVWA</h2>
+          <p>SKVWA (Shivansh Kuntal Vulnerable Web App) is a <em>visual clone</em> intended for safe demonstrations. It intentionally omits server-side code, databases, and real vulnerabilities. Use it as a base to wire your own controlled training backend.</p>
+          <ul>
+            <li>Pure HTML/CSS/JS (one file).</li>
+            <li>No external CDNs or trackers.</li>
+            <li>Hash-based client routing with graceful fallback.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- HELP -->
+      <section id="view-help" class="hide">
+        <div class="panel">
+          <h2>How to Extend</h2>
+          <ol>
+            <li>Split this file into views (e.g., <code>/views/login.html</code>) if needed.</li>
+            <li>Add a backend of your choice (e.g., Node/Python/Go). Avoid deploying real vulnerabilities publicly.</li>
+            <li>Gate any risky lab endpoints behind an auth wall on a private network/VM.</li>
+          </ol>
+          <p class="tag danger">Security Note: Do not host intentionally vulnerable services on an exposed network.</p>
+        </div>
+      </section>
+
+      <footer>
+        Built for demonstrations • © <span id="year"></span> SKVWA • UI only, no data is sent anywhere.
+      </footer>
+    </main>
+  </div>
+
+  <template id="lab-card">
+    <div class="card">
+      <div class="tag"></div>
+      <h3></h3>
+      <p></p>
+      <button class="btn">Open mock</button>
+    </div>
+  </template>
+
+  <script>
+    // Simple state & router
+    const views = ["dashboard","labs","playground","login","register","about","help"];
+    const nav = document.getElementById('nav');
+
+    function setActive(view){
+      views.forEach(v=>{
+        const sec = document.getElementById(`view-${v}`);
+        sec.classList.toggle('hide', v!==view);
+        const link = nav.querySelector(`[data-view="${v}"]`);
+        if(link) link.classList.toggle('active', v===view);
+      });
+      if(!views.includes(view)) location.hash = '#dashboard';
+    }
+
+    function route(){
+      const hash = location.hash.replace('#','') || 'dashboard';
+      setActive(hash);
+    }
+
+    window.addEventListener('hashchange', route);
+    window.addEventListener('load', () => {
+      document.getElementById('year').textContent = new Date().getFullYear();
+      route();
+      initSearch();
+      initButtons();
+      renderLabs();
+    });
+
+    // Quick nav buttons
+    function initButtons(){
+      document.querySelectorAll('[data-goto]').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          const where = btn.getAttribute('data-goto');
+          const filter = btn.getAttribute('data-filter');
+          location.hash = `#${where}`;
+          if(where==='labs' && filter){
+            setTimeout(()=>filterLabs(filter), 0);
+          }
+        });
+      });
+    }
+
+    // Search
+    function initSearch(){
+      const input = document.getElementById('search');
+      window.addEventListener('keydown', (e)=>{
+        if(e.key==='/' && document.activeElement!==input){ e.preventDefault(); input.focus(); }
+      });
+      input.addEventListener('input', ()=>{
+        const q = input.value.trim().toLowerCase();
+        filterLabs(q);
+      });
+    }
+
+    // Labs data (UI only)
+    const LABS = [
+      { key:'sqli', title:'SQL Injection (UI)', text:'Mock search & login forms – no DB.', tag:'Input' },
+      { key:'xss', title:'Cross-Site Scripting (UI)', text:'Escaped echo panels.', tag:'Client' },
+      { key:'csrf', title:'CSRF (UI)', text:'Token placement demo.', tag:'Auth' },
+      { key:'idor', title:'IDOR (UI)', text:'Static profile switcher mock.', tag:'Access' },
+      { key:'file', title:'File Upload (UI)', text:'Client-side validation only.', tag:'Files' },
+      { key:'ssrf', title:'SSRF (UI)', text:'URL fetch is simulated.', tag:'Network' },
+      { key:'rce', title:'Command Injection (UI)', text:'Disabled command panel.', tag:'Input' },
+      { key:'hash', title:'Weak Hashing (UI)', text:'Password strength meter demo.', tag:'Crypto' },
+    ];
+
+    function renderLabs(filter=''){
+      const wrap = document.getElementById('labs-grid');
+      wrap.innerHTML='';
+      const tpl = document.getElementById('lab-card');
+      LABS.filter(l => [l.key,l.title,l.text,l.tag].join(' ').toLowerCase().includes(filter.toLowerCase()))
+          .forEach(lab => {
+            const node = tpl.content.cloneNode(true);
+            node.querySelector('h3').textContent = lab.title;
+            node.querySelector('p').textContent = lab.text;
+            node.querySelector('.tag').textContent = lab.tag;
+            const btn = node.querySelector('.btn');
+            btn.addEventListener('click', ()=> openMock(lab));
+            wrap.appendChild(node);
+          });
+    }
+
+    function filterLabs(q){
+      setActive('labs');
+      renderLabs(q);
+    }
+
+    // Mock modals / toasts
+    function demoToast(msg){
+      const t = document.createElement('div');
+      t.textContent = msg;
+      Object.assign(t.style, {position:'fixed', bottom:'20px', right:'20px', padding:'12px 14px', background:'rgba(12,20,36,.92)', color:'white', border:'1px solid rgba(122,162,255,.35)', borderRadius:'12px', boxShadow:'var(--shadow)', zIndex:9999});
+      document.body.appendChild(t);
+      setTimeout(()=> t.remove(), 2200);
+    }
+
+    function openMock(lab){
+      const overlay = document.createElement('div');
+      Object.assign(overlay.style, {position:'fixed', inset:0, background:'rgba(3,6,12,.75)', display:'grid', placeItems:'center', zIndex:9998});
+      const modal = document.createElement('div');
+      modal.className = 'panel';
+      modal.style.maxWidth = '680px';
+      modal.innerHTML = `
+        <h2>${lab.title}</h2>
+        <p style="color:var(--muted)">${lab.text} This dialog is for walkthroughs. Nothing is executed server-side.</p>
+        <div class="grid-2">
+          <div class="panel">
+            <h3>Form</h3>
+            <div class="field"><label>Input</label><input id="mock-input"></div>
+            <button class="btn" id="mock-run">Submit</button>
+          </div>
+          <div class="panel">
+            <h3>Result</h3>
+            <div id="mock-out">Waiting for input…</div>
+          </div>
+        </div>
+        <div style="margin-top:12px; display:flex; gap:8px; justify-content:flex-end;">
+          <span class="tag">Category: ${lab.tag}</span>
+          <button class="btn" id="mock-close">Close</button>
+        </div>`;
+      overlay.appendChild(modal);
+      document.body.appendChild(overlay);
+      overlay.addEventListener('click', (e)=>{ if(e.target===overlay) overlay.remove(); });
+      modal.querySelector('#mock-close').addEventListener('click', ()=> overlay.remove());
+      modal.querySelector('#mock-run').addEventListener('click', ()=>{
+        const val = modal.querySelector('#mock-input').value;
+        // Escape output for safety
+        const safe = val.replace(/[&<>\"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[s]));
+        modal.querySelector('#mock-out').innerHTML = `<code>${safe || '(no input)'}</code>`;
+      });
+    }
+
+    // Playground actions
+    document.getElementById('echoBtn').addEventListener('click', ()=>{
+      const v = document.getElementById('echo').value;
+      const safe = v.replace(/[&<>\"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[s]));
+      document.getElementById('echoOut').innerHTML = `<code>${safe || '(no input)'}</code>`;
+    });
+    document.getElementById('saveLS').addEventListener('click', ()=>{
+      localStorage.setItem(document.getElementById('k').value, document.getElementById('v').value);
+      demoToast('Saved to localStorage');
+    });
+    document.getElementById('loadLS').addEventListener('click', ()=>{
+      const val = localStorage.getItem(document.getElementById('k').value);
+      document.getElementById('lsOut').textContent = val ?? '(no value)';
+    });
+    document.getElementById('clearLS').addEventListener('click', ()=>{
+      localStorage.removeItem(document.getElementById('k').value);
+      document.getElementById('lsOut').textContent = 'Nothing saved yet.';
+      demoToast('Cleared');
+    });
+  </script>
+</body>
+</html>
